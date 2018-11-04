@@ -38,8 +38,6 @@ class MallaInd : public Objeto3D
       void visualizarDE_VBOs( ContextoVis & cv );
       // creacion de VBOs
       void crearVBOs( );
-      // asigna colores a los vértices
-      virtual void setColorVertices();
 
    public:
       // crea una malla vacía (nombre: "malla indexada nueva vacía")
@@ -48,26 +46,30 @@ class MallaInd : public Objeto3D
       MallaInd( const std::string & nombreIni );
       // visualizar el objeto con OpenGL
       virtual void visualizarGL( ContextoVis & cv ) ;
+      // devuelve el numero de vertices de la figura
+      unsigned getNumVer();
+      // establecer colores de los vértices
+      void setColorVertices( std::vector<Tupla3f> * colores = nullptr );
+      // establecer un color para todos los vértices
+      virtual void fijarColorNodo( const Tupla3f & nuevo_color );
 } ;
-// ---------------------------------------------------------------------
 
+// ---------------------------------------------------------------------
+// clase Cubo
 class Cubo : public MallaInd
 {
    public:
       // crea un cubo de lado 1
       Cubo();
-      // crea un cubo de lado 'size'
-      Cubo(float size);
 };
-// ---------------------------------------------------------------------
 
+// ---------------------------------------------------------------------
+// clase Tetraedro
 class Tetraedro : public MallaInd
 {
    public:
       // crea un tetraedro de lado 1
       Tetraedro();
-      // crea un tetraedro de lado 'size'
-      Tetraedro(float size);
 };
 
 #endif

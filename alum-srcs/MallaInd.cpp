@@ -9,8 +9,8 @@
 #include <tuplasg.hpp>
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
-#define TIPO_MI 0         // glBegin-End(0) - glDrawElements(1)
-#define USAR_COLORES 1
+#define TIPO_MI 1         // glBegin-End(0) - glDrawElements(1)
+#define USAR_COLORES 1    // usar setColorVertices
 
 // *****************************************************************************
 // funciones auxiliares
@@ -20,7 +20,7 @@ GLuint VBO_Crear( GLuint tipo, GLuint tamanio, GLvoid * puntero )
   assert( tipo == GL_ARRAY_BUFFER || tipo == GL_ELEMENT_ARRAY_BUFFER );
   GLuint id_vbo;                  // resultado: identificador de VBO
   glGenBuffers( 1, &id_vbo );     // crear nuevo VBO, obtener identificador
-  glBindBuffer( tipo, id_vbo );   // activar eel VBO usando su identificador
+  glBindBuffer( tipo, id_vbo );   // activar el VBO usando su identificador
   glBufferData( tipo, tamanio, puntero, GL_STATIC_DRAW ); // transferencia RAM -> GPU
   glBindBuffer( tipo, 0 );        // desactivación del VBO (activar 0)
   return id_vbo;
@@ -71,8 +71,6 @@ void MallaInd::calcular_normales()
 {
    // COMPLETAR: en la práctica 2: calculo de las normales de la malla
    // .......
-
-
 }
 
 
@@ -81,6 +79,9 @@ void MallaInd::calcular_normales()
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
   #if TIPO_MI == 0    // glBegin-glEnd
+
+  if ( col_ver.size() > 0 )
+    glShadeModel( GL_SMOOTH );       // modo de interpolacion
 
    glBegin( GL_TRIANGLES );
    for (unsigned i = 0; i < tabla_tri.size(); i++) {
@@ -102,6 +103,7 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
    if ( col_ver.size() > 0 ) {
      glEnableClientState( GL_COLOR_ARRAY );             // habilitar colores
      glColorPointer( 3, GL_FLOAT, 0, col_ver.data() );  // fija puntero a colores
+     glShadeModel( GL_SMOOTH );                         // modo de interpolacion
    }
 
    glDrawElements( GL_TRIANGLES, 3*tabla_tri.size(), GL_UNSIGNED_INT, tabla_tri.data() );
@@ -144,10 +146,6 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
 void MallaInd::visualizarGL( ContextoVis & cv )
 {
-   // COMPLETAR: práctica 1: visualizar en modo inmediato o en modo diferido (VBOs),
-   // (tener en cuenta el modo de visualización en 'cv' (alambre, sólido, etc..))
-   //
-   // .............
    switch (cv.modoVis) {
      case modoPuntos:
       glPointSize(3);
@@ -168,48 +166,67 @@ void MallaInd::visualizarGL( ContextoVis & cv )
        crearVBOs();
      visualizarDE_VBOs(cv);
    }
-   else {
+   else
      visualizarDE_MI(cv);
-   }
-
 
 }
 
 // *****************************************************************************
 
-void MallaInd::setColorVertices()
+unsigned MallaInd::getNumVer()
 {
+  return num_ver;
+}
+
+// *****************************************************************************
+
+void MallaInd::setColorVertices( std::vector<Tupla3f> * colores )
+{
+  if (colores != nullptr) {
+    col_ver.clear();
+    for (unsigned i = 0; i < num_ver; i++)
+      col_ver.push_back( colores->at(i) );
+  }
+
   #if USAR_COLORES == 1
-  for (unsigned i = 0; i < num_ver; i++) {
-    if ( i%2 == 0 )
-      col_ver.push_back( {0, 0, 0} );
-    else
-      col_ver.push_back( {214.0/256.0, 214.0/256.0, 66.0/256.0} );
+  else if (col_ver.size() == 0) {
+    for (unsigned i = 0; i < num_ver; i++){
+      if( i%2 == 0 )
+        col_ver.push_back( {0.0, 0.0, 0.0} );
+      else
+        col_ver.push_back( {214.0/256.0, 214.0/256.0, 66.0/256.0} );
+    }
   }
   #endif
 }
 
 // *****************************************************************************
 
+void MallaInd::fijarColorNodo( const Tupla3f & nuevo_color )
+{
+  col_ver.clear();
+  for (unsigned i = 0; i < num_ver; i++) {
+    col_ver.push_back( nuevo_color );
+  }
+}
+
+// *****************************************************************************
+
 Cubo::Cubo()
-:  Cubo(1.0) {}
-
-
-Cubo::Cubo( float size )
 :  MallaInd( "malla cubo" )
 {
   num_ver = 8;
 
   // Vertices
   tabla_ver = {
-    Tupla3f(0.5,0,0.5) * size,
-    Tupla3f(-0.5,0,0.5) * size,
-    Tupla3f(-0.5,0,-0.5) * size,
-    Tupla3f(0.5,0,-0.5) * size,
-    Tupla3f(0.5,1,0.5) * size,
-    Tupla3f(-0.5,1,0.5) * size,
-    Tupla3f(-0.5,1,-0.5) * size,
-    Tupla3f(0.5,1,-0.5) * size
+    Tupla3f(0.5,0,0.5),
+    Tupla3f(-0.5,0,0.5),
+    Tupla3f(-0.5,0,-0.5),
+    Tupla3f(0.5,0,-0.5),
+    Tupla3f(0.5,1,0.5),
+    Tupla3f(-0.5,1,0.5),
+    Tupla3f(-0.5,1,-0.5),
+    Tupla3f(0.5,1,-0.5)
   };
 
   // Indices
@@ -235,20 +252,16 @@ Cubo::Cubo( float size )
 // *****************************************************************************
 
 Tetraedro::Tetraedro()
-:  Tetraedro(1.0) {}
-
-
-Tetraedro::Tetraedro( float size )
 :  MallaInd( "malla tetraedro")
 {
   num_ver = 4;
 
   // Vertices
   tabla_ver = {
-    Tupla3f(1,0,0) * size,
-    Tupla3f(-0.5,0,-0.866) * size,
-    Tupla3f(-0.5,0,0.866) * size,
-    Tupla3f(0,1,0) * size
+    Tupla3f(1,0,0),
+    Tupla3f(-0.5,0,-0.866),
+    Tupla3f(-0.5,0,0.866),
+    Tupla3f(0,1,0)
   };
 
   // Indices

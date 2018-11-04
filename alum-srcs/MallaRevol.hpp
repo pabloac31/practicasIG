@@ -30,7 +30,7 @@ protected:
    ) ;
 
    public:
-      MallaRevol() {}  // Constructor vacío
+      MallaRevol( const std::string & nombre );  
       // crea una malla de revolucion
       MallaRevol( const std::string & nombre_arch,
                   const unsigned nperfiles,

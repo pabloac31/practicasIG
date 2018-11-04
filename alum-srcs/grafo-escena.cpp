@@ -101,17 +101,19 @@ void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 
 NodoGrafoEscena::NodoGrafoEscena()
 {
-   // COMPLETAR: práctica 3: inicializar un nodo vacío (sin entradas)
-   // ........
+   ponerNombre("Escena anónima");
 
 }
 // -----------------------------------------------------------------------------
 
 void NodoGrafoEscena::fijarColorNodo( const Tupla3f & nuevo_color )
 {
-   // COMPLETAR: práctica 3: asignarle un color plano al nodo, distinto del padre
-   // ........
-
+   if (nuevo_color != color) {
+     color = nuevo_color;
+     for (unsigned i = 0; i < entradas.size(); i++)
+       if (entradas[i].tipo == TipoEntNGE:: objeto)
+         entradas[i].objeto->fijarColorNodo(color);
+   }
 }
 
 // -----------------------------------------------------------------------------
@@ -224,48 +226,41 @@ BrazoRob::BrazoRob()
 {
   ponerNombre("nodo raíz del modelo");
   Matriz4f id = MAT_Ident();
+  int ind_p1, ind_p2, ind_p3;
 
   agregar( new Base() );
   agregar( MAT_Traslacion(0.0, 0.5, 0.0) );
-  Matriz4f * ptr_p1 = leerPtrMatriz( agregar(id) );   // Grado de libertad 1
+  ind_p1 = agregar(id);   // Grado de libertad 1
   agregar( new ParteInf() );
   agregar( MAT_Traslacion(2.0, 3.7, -0.5) );
-  Matriz4f * ptr_p2 = leerPtrMatriz( agregar(id) );   // Grado de libertad 2
+  ind_p2 = agregar(id);   // Grado de libertad 2
   agregar( MAT_Rotacion(-30, 0, 0, 1) );
   agregar( new Brazo() );
   agregar( MAT_Traslacion(-4.2, 0.0, 0.0) );
-  Matriz4f * ptr_p3 = leerPtrMatriz( agregar(id) );   // Grado de libertad 3
-  agregar( MAT_Rotacion(90, 0, 0, 1) );
-  agregar( new Articulacion() );
-  agregar( MAT_Rotacion(180, 0, 0, 1) );
-  agregar( MAT_Traslacion(0.5, -0.2, 0.4) );
-  Matriz4f * ptr_p4 = leerPtrMatriz( agregar(id) );   // Grado de libertad 4
-  agregar( new Pinza() );
-  agregar( MAT_Traslacion(0.0, 0.0, 0.3) );
-  Matriz4f * ptr_p5 = leerPtrMatriz( agregar(id) );   // Grado de libertad 5
-  agregar( new Pinza() );
+  Cabezal * cabezal = new Cabezal();
+  agregar( cabezal );
 
-  Parametro p1("rotación del cuerpo", ptr_p1,
+  Parametro p1("rotación del cuerpo", leerPtrMatriz(ind_p1),
                [=](float v) {return MAT_Rotacion(v, 0, 1, 0);},
-               false, 0, 2, 0);
+               false, 0, 5, 0);
   parametros.push_back(p1);
 
-  Parametro p2("rotación de la articulación inferior", ptr_p2,
+  Parametro p2("rotación de la articulación inferior", leerPtrMatriz(ind_p2),
                [=](float v) {return MAT_Rotacion(v, 0, 0, 1);},
                true, 0, 60, 0.02);
   parametros.push_back(p2);
 
-  Parametro p3("rotación del cabezal", ptr_p3,
+  Parametro p3("rotación del cabezal", cabezal->getPtrP3(),
                [=](float v) {return MAT_Rotacion(v, 0, 0, 1);},
                true, -80, 120, 0.05);
   parametros.push_back(p3);
 
-  Parametro p4("movimiento dientes", ptr_p4,
+  Parametro p4("movimiento pinzas", cabezal->getPtrP4(),
                [=](float v) {return MAT_Traslacion(0.0, 0.0, v);},
                true, 0, 0.2, 0.1);
   parametros.push_back(p4);
 
-  Parametro p5("movimiento diente der", ptr_p5,
+  Parametro p5("movimiento pinza der", cabezal->getPtrP5(),
                [=](float v) {return MAT_Traslacion(0.0, 0.0, -v);},
                true, 0, 0.2, 0.1);
   parametros.push_back(p5);
@@ -276,7 +271,9 @@ BrazoRob::BrazoRob()
 Base::Base()
 {
   agregar( MAT_Escalado(1.2, 0.7, 1.2) );
-  agregar( new Cilindro(2, 20, true, true) );
+  Cilindro * base = new Cilindro(2, 20, true, true);
+  base->fijarColorNodo( {0.125, 0.125, 0.125} );  // ejemplo de fijarColorNodo
+  agregar( base );
 }
 
 // -----------------------------------------------------------------------------
@@ -296,6 +293,37 @@ Brazo::Brazo()
 }
 
 // -----------------------------------------------------------------------------
+Cabezal::Cabezal()
+{
+  Matriz4f id = MAT_Ident();
+  ind_p3 = agregar( id );  // Grado de libertad 3
+  agregar( MAT_Rotacion(90, 0, 0, 1) );
+  agregar( new Articulacion() );
+  agregar( MAT_Rotacion(180, 0, 0, 1) );
+  agregar( MAT_Traslacion(0.5, -0.2, 0.4) );
+  ind_p4 = agregar(id);   // Grado de libertad 4
+  agregar( new Pinza() );
+  agregar( MAT_Traslacion(0.0, 0.0, 0.3) );
+  ind_p5 = agregar(id);   // Grado de libertad 5
+  agregar( new Pinza() );
+}
+
+Matriz4f * Cabezal::getPtrP3()
+{
+  return leerPtrMatriz( ind_p3 );
+}
+
+Matriz4f * Cabezal::getPtrP4()
+{
+  return leerPtrMatriz( ind_p4 );
+}
+
+Matriz4f * Cabezal::getPtrP5()
+{
+  return leerPtrMatriz( ind_p5 );
+}
+
+// -----------------------------------------------------------------------------
 Viga::Viga()
 {
   agregar( MAT_Escalado(0.4, 4.0, 0.7) );
@@ -307,12 +335,19 @@ Articulacion::Articulacion()
 {
   agregar( MAT_Rotacion(90, 1, 0, 0) );
   agregar( MAT_Escalado(0.4, 1.0, 0.4) );
-  agregar( new Cilindro(2, 20, true, true) );
+  Cilindro * articulacion = new Cilindro(2, 20, true, true);
+  articulacion->fijarColorNodo( {0.125, 0.125, 0.125} );   // ejemplo de fijarColorNodo
+  agregar( articulacion );
 }
 
 // -----------------------------------------------------------------------------
 Pinza::Pinza()
 {
   agregar( MAT_Escalado(0.5, 0.3, 0.1) );
-  agregar( new Cubo() );
+  Cubo * pinza = new Cubo();
+  std::vector<Tupla3f> colores;
+  for (unsigned i = 0; i < pinza->getNumVer(); i++)
+    colores.push_back( {0.0, (float)(i+1)/ pinza->getNumVer(), 0.0} );
+  pinza->setColorVertices( &colores );   // ejemplo de setColorVertices
+  agregar( pinza );
 }

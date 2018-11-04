@@ -48,5 +48,5 @@ SimpleSP::SimpleSP()
 : ShaderProg( "simple_fs.glsl", "simple_vs.glsl")
 {
    using namespace std ;
-   //cout << "creado shader program simple" << endl << flush ;
+   cout << "creado shader program simple" << endl << flush ;
 }

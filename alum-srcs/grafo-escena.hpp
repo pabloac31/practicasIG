@@ -65,6 +65,7 @@ class NodoGrafoEscena : public Objeto3D
    protected:
 
    std::vector<EntradaNGE> entradas;    // vector de entradas
+   Tupla3f color;                       // color asignado al nodo
 
    public:
 
@@ -147,6 +148,17 @@ class Brazo : public NodoGrafoEscena
 {
 public:
   Brazo();
+};
+
+class Cabezal : public NodoGrafoEscena
+{
+private:
+  int ind_p3, ind_p4, ind_p5;
+public:
+  Cabezal();
+  Matriz4f * getPtrP3();
+  Matriz4f * getPtrP4();
+  Matriz4f * getPtrP5();
 };
 
 class Viga : public NodoGrafoEscena

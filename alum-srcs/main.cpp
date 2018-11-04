@@ -18,8 +18,6 @@
 
 // includes en ../include
 #include "aux.hpp"  // include cabeceras de opengl / glut / glut / glew
-
-
 #include "CamaraInter.hpp"
 
 // includes de archivos en el directorio de trabajo (de las prácticas)
@@ -71,6 +69,9 @@ ContextoVis
 // puntero a función que se ejecuta cuando no hay eventos pendientes
 // (si es null no se hace nada)
 void (*func_desocupado_actual)(void) = nullptr ;
+
+#define USAR_CAUCE_PROGRAMABLE 1    // cauce fijo(0) - cauce programado(1)
+ShaderProg * shaders;
 
 
 // *********************************************************************
@@ -189,7 +190,10 @@ void VisualizarFrame()
    // hacer que la ventana GLFW sea la ventana actual
    glfwMakeContextCurrent( glfw_window );
 
+   #if USAR_CAUCE_PROGRAMABLE == 1
+   shaders->activar();  // activar nuestro programa
 
+   #endif
 
 
    DibujarEscena();  // ordenes OpenGL para dibujar la escena correspondiente a la práctica actual
@@ -642,8 +646,10 @@ void Inicializa_OpenGL( )
 
    Inicializa_GLEW();
 
+   #if USAR_CAUCE_PROGRAMABLE == 1
+   shaders = new SimpleSP();
 
-
+   #endif
 
    // ya está
    CError();
