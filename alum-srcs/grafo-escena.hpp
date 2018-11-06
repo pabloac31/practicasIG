@@ -153,9 +153,10 @@ public:
 class Cabezal : public NodoGrafoEscena
 {
 private:
-  int ind_p3, ind_p4, ind_p5;
+  int ind_p3, ind_p4, ind_p5;   // indices para los parametros
 public:
   Cabezal();
+  // Metodos para obtener los punteros a las matrices
   Matriz4f * getPtrP3();
   Matriz4f * getPtrP4();
   Matriz4f * getPtrP5();

@@ -1,0 +1,48 @@
+Sistema Operativo: Linux Mint 18.3 Sylvia
+
+Teclas activas:
+    Q/esc -> salir
+    P -> cambiar de práctica (P3 por defecto)
+    + -> aumentar zoom
+    - -> disminuir zoom
+    O -> cambiar de objeto
+    M -> cambiar modo de visualización
+    V -> cambiar modo de envío (diferido - inmediato)
+
+============================== Práctica 1 ==============================
+- Se ha programado un cauce gráfico simple usando la clase ShaderProg
+    Vertex Shader -> simple_vs.glsls
+    Fragment Shader -> simple_fs.glsl
+- Cambiar el valor de TIPO_MI si se quiere usar glDrawElements (1)
+  o glBegin/glVertex/glEnd (0).
+- Se ha implementado la visualización en modo diferido (con VBOs).
+- Se añade la posibilidad de usar colores a través de la funciones
+  setColorVertices y fijarColorNodo. La primera se puede usar para
+  asignar un color distinto a cada vértice mientras que la segunda
+  asigna un color plano a todo el objeto. Si USAR_COLORES vale 1, 
+  en setColorVertices se crea un patrón por defecto usando los 
+  colores amarillo y negro y el modo interpolación (GL_SMOOTH).
+- Se ha cambiado a protected la visibilidad de los datos privados de la
+  clase Objeto3D para poder acceder a ellos desde Cubo y Tetraedro.
+
+============================== Práctica 2 ==============================
+- Se ha implementado la visualización en modo diferido (con VBOs).
+- Se pueden usar colores usando las funciones descritas anteriormente.
+- Se añade la posibilidad de pasar como parámetros por línea de comandos 
+  el nombre del archivo ply y el del archivo para construir el objeto 
+  mallaRevol.
+
+============================== Práctica 3 ==============================
+- Teclas nuevas:
+    G -> activar grado de libertad siguiente al actual
+    A -> activar o desactivar animaciones
+    R -> reinicializar los parámetros de modelo y desactivar animaciones
+    > -> incrementar valor (animaciones desactivadas)
+    > -> aumentar velocidad (animaciones activadas)
+    < -> decrementar valor (animaciones desactivadas)
+    < -> disminuir velocidad (animaciones activadas)
+- Se crea un único objeto BrazoRob, con 5 grados de libertad (ver PDF)
+- Podemos definir un color plano para cada nodo o colorear cada 
+  vértice de un color mediante las funciones descritas en la P1.
+- Se añade el método fijarColorNodo a Objeto3d para proporcionar 
+  compatibilidad en la implementación.

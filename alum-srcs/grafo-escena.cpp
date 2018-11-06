@@ -230,10 +230,10 @@ BrazoRob::BrazoRob()
 
   agregar( new Base() );
   agregar( MAT_Traslacion(0.0, 0.5, 0.0) );
-  ind_p1 = agregar(id);   // Grado de libertad 1
+  ind_p1 = agregar(id);                // Grado de libertad 1
   agregar( new ParteInf() );
   agregar( MAT_Traslacion(2.0, 3.7, -0.5) );
-  ind_p2 = agregar(id);   // Grado de libertad 2
+  ind_p2 = agregar(id);                // Grado de libertad 2
   agregar( MAT_Rotacion(-30, 0, 0, 1) );
   agregar( new Brazo() );
   agregar( MAT_Traslacion(-4.2, 0.0, 0.0) );

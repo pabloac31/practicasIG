@@ -38,9 +38,9 @@ MallaRevol::MallaRevol( const std::string & nombre_arch,
    nvp = vertices.size() / 3;
    num_ver = nper * nvp;    // dato de la clase MallaInd
 
-   for (unsigned i = 0; i < vertices.size()-2; i+=3) {
+   for (unsigned i = 0; i < vertices.size()-2; i+=3)
      perfil_original.push_back( {vertices[i], vertices[i+1], vertices[i+2]} );
-   }
+   
    crearMallaRevol( perfil_original, crear_tapas, cerrar_malla );
 }
 

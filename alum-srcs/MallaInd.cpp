@@ -10,7 +10,7 @@
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
 #define TIPO_MI 1         // glBegin-End(0) - glDrawElements(1)
-#define USAR_COLORES 1    // usar setColorVertices
+#define USAR_COLORES 1    // usar patron amarillo-negro
 
 // *****************************************************************************
 // funciones auxiliares
@@ -205,9 +205,8 @@ void MallaInd::setColorVertices( std::vector<Tupla3f> * colores )
 void MallaInd::fijarColorNodo( const Tupla3f & nuevo_color )
 {
   col_ver.clear();
-  for (unsigned i = 0; i < num_ver; i++) {
+  for (unsigned i = 0; i < num_ver; i++)
     col_ver.push_back( nuevo_color );
-  }
 }
 
 // *****************************************************************************
