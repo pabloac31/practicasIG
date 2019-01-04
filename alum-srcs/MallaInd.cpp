@@ -8,9 +8,10 @@
 #include <aux.hpp>
 #include <tuplasg.hpp>
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
+#include <cstdlib>  // rand()
 
 #define TIPO_MI 1         // glBegin-End(0) - glDrawElements(1)
-#define USAR_COLORES 1    // usar patron amarillo-negro
+#define USAR_COLORES 0    // usar patron amarillo-negro
 
 // *****************************************************************************
 // funciones auxiliares
@@ -34,6 +35,7 @@ void MallaInd::crearVBOs()
 {
   tam_ver = sizeof(float) * 3L * num_ver;
   tam_tri = sizeof(unsigned) * 3L * tabla_tri.size();
+  tam_cctt = sizeof(float) * 2L * num_ver;
 
   // crear VBO conteniendo la tabla de vértices
   id_vbo_ver = VBO_Crear( GL_ARRAY_BUFFER, tam_ver, tabla_ver.data() );
@@ -43,6 +45,12 @@ void MallaInd::crearVBOs()
   // crear VBO con los colores de los vértices
   if ( col_ver.size() > 0 )
     id_vbo_col_ver = VBO_Crear( GL_ARRAY_BUFFER, tam_ver, col_ver.data() );
+
+  if ( tabla_nor_ver.size() > 0 )
+    id_vbo_nor_ver = VBO_Crear( GL_ARRAY_BUFFER, tam_ver, tabla_nor_ver.data() );
+
+  if ( coor_textura.size() > 0 )
+    id_vbo_cctt = VBO_Crear( GL_ARRAY_BUFFER, tam_cctt, coor_textura.data() );
 
   vbos_creados = true;
 }
@@ -58,10 +66,10 @@ MallaInd::MallaInd( const std::string & nombreIni )
 {
    // 'identificador' puesto a 0 por defecto, 'centro_oc' puesto a (0,0,0)
    ponerNombre(nombreIni) ;
-   id_vbo_tri = id_vbo_ver = id_vbo_col_ver = 0;
+   id_vbo_tri = id_vbo_ver = id_vbo_col_ver = id_vbo_nor_ver = id_vbo_cctt = 0;
    num_ver = 0;
-   tam_ver = tam_tri = 0;
-   vbos_creados = false;
+   tam_ver = tam_tri = tam_cctt = 0;
+   vbos_creados = normales_creadas = false;
 
 }
 // -----------------------------------------------------------------------------
@@ -69,8 +77,36 @@ MallaInd::MallaInd( const std::string & nombreIni )
 
 void MallaInd::calcular_normales()
 {
-   // COMPLETAR: en la práctica 2: calculo de las normales de la malla
-   // .......
+  std::cout << "calculando normales..." << std::endl;
+  assert( !tabla_ver.empty() && !tabla_tri.empty() );
+
+  tabla_nor_ver.insert( tabla_nor_ver.begin(), num_ver, {0.0, 0.0, 0.0} );
+
+   // caras
+   Tupla3f a, b, m, n;
+   for (auto cara : tabla_tri) {
+     a = tabla_ver[cara(1)] - tabla_ver[cara(0)];
+     b = tabla_ver[cara(2)] - tabla_ver[cara(0)];
+     m = a.cross(b);   // producto vectorial
+     if (m(X)!=0 || m(Y)!=0 || m(Z)!=0)
+       n = m.normalized();
+     // else n = {1,0,0};  // asignamos cualquier normal
+     tabla_nor_caras.push_back(n);
+
+   // vértices
+   for (unsigned j = 0; j < 3; j++)
+     tabla_nor_ver[cara(j)] = tabla_nor_ver[cara(j)] + n;
+
+  }
+
+   // normalizamos los vértices
+   for (auto &normal : tabla_nor_ver){
+     if (normal(X)!=0 || normal(Y)!=0 || normal(Z)!=0)
+       n = normal.normalized();
+     //else n = {1,0,0};  // asignamos cualquier normal
+   }
+
+   normales_creadas = true;
 }
 
 
@@ -79,9 +115,6 @@ void MallaInd::calcular_normales()
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
   #if TIPO_MI == 0    // glBegin-glEnd
-
-  if ( col_ver.size() > 0 )
-    glShadeModel( GL_SMOOTH );       // modo de interpolacion
 
    glBegin( GL_TRIANGLES );
    for (unsigned i = 0; i < tabla_tri.size(); i++) {
@@ -97,16 +130,16 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
 
   #else              // glDrawElements
 
+  if ( col_ver.size() > 0 ) {
+    glEnableClientState( GL_COLOR_ARRAY );             // habilitar colores
+    glColorPointer( 3, GL_FLOAT, 0, col_ver.data() );  // fija puntero a colores
+  }
+
    glEnableClientState( GL_VERTEX_ARRAY );
    glVertexPointer( 3, GL_FLOAT, 0, tabla_ver.data() );
 
-   if ( col_ver.size() > 0 ) {
-     glEnableClientState( GL_COLOR_ARRAY );             // habilitar colores
-     glColorPointer( 3, GL_FLOAT, 0, col_ver.data() );  // fija puntero a colores
-     glShadeModel( GL_SMOOTH );                         // modo de interpolacion
-   }
+   glDrawElements( GL_TRIANGLES, 3L * tabla_tri.size(), GL_UNSIGNED_INT, tabla_tri.data() );
 
-   glDrawElements( GL_TRIANGLES, 3*tabla_tri.size(), GL_UNSIGNED_INT, tabla_tri.data() );
    glDisableClientState( GL_VERTEX_ARRAY );
 
    if ( col_ver.size() > 0 )
@@ -144,8 +177,78 @@ void MallaInd::visualizarDE_VBOs( ContextoVis & cv )
 
 // -----------------------------------------------------------------------------
 
+void MallaInd::visualizarDE_Plano( ContextoVis & cv )
+{
+  glBegin(GL_TRIANGLES);
+  for (unsigned i = 0; i < tabla_tri.size(); i++) {
+    glNormal3fv( tabla_nor_caras[i] );
+    for (unsigned j = 0; j < 3; j++) {
+      unsigned ind_ver = tabla_tri[i](j);
+      if ( coor_textura.size() > 0 )
+        glTexCoord2fv( coor_textura[ind_ver] );
+
+      glVertex3fv( tabla_ver[ind_ver] );
+    }
+  }
+
+  glEnd();
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarDE_NT( ContextoVis & cv )
+{
+  std::cout << "visualizarDE_NT" << std::endl;
+  glVertexPointer( 3, GL_FLOAT, 0, tabla_ver.data() );
+  glTexCoordPointer( 2, GL_FLOAT, 0, coor_textura.data() );
+  glNormalPointer( GL_FLOAT, 0, tabla_nor_ver.data() );
+
+  glEnableClientState( GL_VERTEX_ARRAY );
+  glEnableClientState( GL_NORMAL_ARRAY );
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+  glDrawElements( GL_TRIANGLES, 3L * tabla_tri.size(), GL_UNSIGNED_INT, tabla_tri.data() );
+
+  glDisableClientState( GL_VERTEX_ARRAY );
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::visualizarVBOs_NT( ContextoVis & cv)
+{
+  std::cout << "visualizarVBOs_NT" << std::endl;
+  // activar VBO de coordenadas de normales
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_nor_ver );
+  glNormalPointer( GL_FLOAT, 0, 0 );  // (0 == offset en vbo)
+  glEnableClientState( GL_NORMAL_ARRAY );
+
+  // activar VBO de coordenadas de textura
+  glBindBuffer( GL_ARRAY_BUFFER, id_vbo_cctt );
+  glTexCoordPointer( 2, GL_FLOAT, 0, 0);  // (0 == offset en vbo)
+  glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+  visualizarDE_VBOs( cv );
+
+  // desactivar punteros a tablas
+  glDisableClientState( GL_NORMAL_ARRAY );
+  glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// -----------------------------------------------------------------------------
+
 void MallaInd::visualizarGL( ContextoVis & cv )
 {
+  if ( cv.modoVis == modoColorNodoPlano || cv.modoVis == modoMateriales )
+    if ( !normales_creadas )
+      calcular_normales();
+
+  else {
+    glDisable( GL_LIGHTING );
+    glDisable( GL_TEXTURE_2D );
+  }
+
    switch (cv.modoVis) {
      case modoPuntos:
       glPointSize(3);
@@ -153,22 +256,57 @@ void MallaInd::visualizarGL( ContextoVis & cv )
       break;
      case modoAlambre:
       glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      glShadeModel( GL_SMOOTH );
       break;
      case modoSolido:
       glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+      glShadeModel( GL_SMOOTH );
+      break;
+     case modoColorNodoPlano:
+       glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+       glShadeModel( GL_FLAT ); // activa sombreado plano
+      break;
+     case modoMateriales: // modoColorNodoSuave
+       glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+       glShadeModel( GL_SMOOTH );
       break;
      default:
       glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      glShadeModel( GL_SMOOTH );
    }
 
-   if (cv.usarVBOs) {
-     if ( !vbos_creados )
-       crearVBOs();
-     visualizarDE_VBOs(cv);
+   // visualizacion para modo puntos, alambre y solido
+   if ( cv.modoVis != modoColorNodoPlano && cv.modoVis != modoMateriales ) {
+     if ( cv.usarVBOs ) {
+        if( !vbos_creados )
+          crearVBOs();
+       visualizarDE_VBOs(cv);
+     }
+     else
+      visualizarDE_MI(cv);
    }
-   else
-     visualizarDE_MI(cv);
 
+   // visualizacion para modoColorNodoPlano (con glBegin-glEnd)
+   else if ( cv.modoVis == modoColorNodoPlano ) {
+     if ( cv.usarVBOs ) {
+        if( !vbos_creados )
+          crearVBOs();
+       visualizarVBOs_NT(cv);
+     }
+     else
+      visualizarDE_Plano(cv);
+   }
+
+   // visualizacion para modoMateriales
+    else {
+      if ( cv.usarVBOs ) {
+        if (!vbos_creados)
+          crearVBOs();
+        visualizarVBOs_NT(cv);
+      }
+      else
+        visualizarDE_NT(cv);
+    }
 }
 
 // *****************************************************************************

@@ -17,7 +17,7 @@ using namespace std ;
 
 static unsigned objetoActivo2 = 0 ; // objeto activo: malla ply (0), malla revol (1)
 static constexpr int numObjetos2 = 5 ;
-static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+static Objeto3D * objetos2[numObjetos2] = { nullptr, nullptr, nullptr, nullptr, nullptr};
 
 // ---------------------------------------------------------------------
 // Función para implementar en la práctica 1 para inicialización.
@@ -38,10 +38,10 @@ void P2_Inicializar( int argc, char * argv[] )
      obj_rev = argv[2];
 
    objetos2[0] = new MallaPLY(obj_ply);
-   objetos2[1] = new MallaRevol(obj_rev, 50, true, true);
-   objetos2[2] = new Cilindro(2, 50, true, true);
-   objetos2[3] = new Cono(2, 50, true, true);
-   objetos2[4] = new Esfera(50, 50, true, true);
+   objetos2[1] = new MallaRevol(obj_rev, 50, true, true, true);
+   objetos2[2] = new Cilindro(2, 50, true, true, true);
+   objetos2[3] = new Cono(2, 50, true, true, true);
+   objetos2[4] = new Esfera(50, 50, true, true, true);
 
    cout << "hecho." << endl << flush ;
 }

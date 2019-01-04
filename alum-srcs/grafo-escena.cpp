@@ -83,19 +83,31 @@ EntradaNGE::~EntradaNGE()
 
 void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
 {
+   cv.pilaMateriales.push();      // push de la pila de materiales
    glMatrixMode( GL_MODELVIEW );  // operaremos sobre la modelview
    glPushMatrix();                // guarda modelview actual
+
    // recorrer todas las entradas del array que hay en el nodo:
    for (unsigned i = 0; i < entradas.size(); i++) {
-     if (entradas[i].tipo == TipoEntNGE::objeto )   // si la entrada es sub-objeto
-       entradas[i].objeto->visualizarGL( cv );    // visualizarlo
-     else {
-       glMatrixMode( GL_MODELVIEW );  // modo modelview
-       glMultMatrixf( *(entradas[i].matriz ) ); // componerla
+     switch (entradas[i].tipo) {
+       case TipoEntNGE::objeto:
+        entradas[i].objeto->visualizarGL(cv);    // visualizarlo
+       break;
+
+       case TipoEntNGE::transformacion:
+        glMatrixMode( GL_MODELVIEW );  // modo modelview
+        glMultMatrixf( *(entradas[i].matriz ) ); // componerla
+       break;
+
+       case TipoEntNGE::material:
+        cv.pilaMateriales.activarMaterial( entradas[i].material );
+       break;
      }
    }
+
    glMatrixMode( GL_MODELVIEW );  // operaremos sobre la modelview
-   glPopMatrix();                 // restaura modelvire guardada
+   glPopMatrix();                 // restaura modelview guardada
+   cv.pilaMateriales.pop();
 }
 // -----------------------------------------------------------------------------
 
@@ -271,7 +283,7 @@ BrazoRob::BrazoRob()
 Base::Base()
 {
   agregar( MAT_Escalado(1.2, 0.7, 1.2) );
-  Cilindro * base = new Cilindro(2, 20, true, true);
+  Cilindro * base = new Cilindro(2, 20, true, true, false);
   base->fijarColorNodo( {0.125, 0.125, 0.125} );  // ejemplo de fijarColorNodo
   agregar( base );
 }
@@ -335,7 +347,7 @@ Articulacion::Articulacion()
 {
   agregar( MAT_Rotacion(90, 1, 0, 0) );
   agregar( MAT_Escalado(0.4, 1.0, 0.4) );
-  Cilindro * articulacion = new Cilindro(2, 20, true, true);
+  Cilindro * articulacion = new Cilindro(2, 20, true, true, false);
   articulacion->fijarColorNodo( {0.125, 0.125, 0.125} );   // ejemplo de fijarColorNodo
   agregar( articulacion );
 }
@@ -350,4 +362,65 @@ Pinza::Pinza()
     colores.push_back( {0.0, (float)(i+1)/ pinza->getNumVer(), 0.0} );
   pinza->setColorVertices( &colores );   // ejemplo de setColorVertices
   agregar( pinza );
+}
+
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+EscenaP4::EscenaP4()
+{
+  ponerNombre( "escena para la P4" );
+  //agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
+
+  agregar( MAT_Escalado(2.5, 2.5, 2.5) );
+  agregar( new Lata() );
+  agregar( MAT_Escalado(0.2, 0.2, 0.2) );
+  agregar( MAT_Traslacion(0.0, 1.4, 5.0) );
+  agregar( new PeonMadera() );
+  agregar( MAT_Traslacion(2.5, 0.0, 0.0) );
+  agregar( new PeonBlanco() );
+  agregar( MAT_Traslacion(2.5, 0.0, 0.0) );
+  agregar( new PeonNegro() );
+
+}
+
+// -----------------------------------------------------------------------------
+Lata::Lata()
+{
+  ponerNombre( "lata" );
+
+  agregar( new MaterialLata() );
+  agregar( new MallaRevol("../plys/lata-pcue.ply", 20, false, false, true) );
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-pinf.ply", 20, false, false, true) );
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-psup.ply", 20, false, false, true) );
+
+}
+
+// -----------------------------------------------------------------------------
+PeonMadera::PeonMadera()
+{
+  ponerNombre( "peón de madera" );
+
+  agregar( new MaterialPeonMadera() );
+  agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
+}
+
+// -----------------------------------------------------------------------------
+PeonBlanco::PeonBlanco()
+{
+  ponerNombre( "peón blanco" );
+
+  agregar( new MaterialPeonBlanco() );
+  agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
+}
+
+// -----------------------------------------------------------------------------
+PeonNegro::PeonNegro()
+{
+  ponerNombre( "peón negro" );
+
+  agregar( new MaterialPeonNegro() );
+  agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
 }

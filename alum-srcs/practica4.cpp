@@ -8,13 +8,18 @@
 #include "aux.hpp"
 #include "tuplasg.hpp"   // Tupla3f
 #include "practicas.hpp"
-#include "practica3.hpp"
-
+#include "practica4.hpp"
+#include "grafo-escena.hpp" // NodoGrafoEscena
+#include "materiales.hpp"
 
 using namespace std ;
 
-// COMPLETAR: práctica 4: declaración de variables de la práctica 4 (static)
-// ....
+static constexpr int numObjetos4 = 1 ;
+static unsigned objetoActivo4 = 0 ;
+static NodoGrafoEscena * objetos4[numObjetos4] = { nullptr };
+static ColFuentesLuzP4 * luzP4 = nullptr;
+static unsigned angulo4 = 0;
+static constexpr float INC = 3.0;
 
 
 // ---------------------------------------------------------------------
@@ -26,8 +31,8 @@ void P4_Inicializar(  )
 {
    cout << "Creando objetos de la práctica 4 .... " << flush ;
 
-   // COMPLETAR: práctica 4: inicializar objetos de la práctica 4
-   // ....
+   luzP4 = new ColFuentesLuzP4();
+   objetos4[0] = new EscenaP4();
 
    cout << "hecho." << endl << flush ;
 }
@@ -45,30 +50,44 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 {
    bool res = false  ; // valor devuelto: es true solo cuando se ha procesado alguna tecla
 
+   FuenteDireccional * fuente_dir;
+
    switch ( toupper( tecla ) )
    {
       case 'G' :
          // COMPLETAR: práctica 4: activar el siguiente ángulo (longitud o latitud)
          // ....
+         angulo4 = angulo4==0 ? 1 : 0;
+         cout << "práctica 4: ángulo activo = " << angulo4 << endl;
+         res = true;
 
          break ;
 
       case '>' :
          // COMPLETAR: práctica 4: incrementar el ángulo activo
          // ....
+         fuente_dir = (FuenteDireccional *) luzP4->ptrFuente(0);
+         fuente_dir->variarAngulo(angulo4, INC);
+         cout << "práctica 4: ángulo " << angulo4 << " cambiado. Nuevo valor = " << (angulo4 ? fuente_dir->lati : fuente_dir->longi) << endl;
+         res = true;
 
          break ;
 
       case '<' :
          // COMPLETAR: práctica 4: decrementar el ángulo activo
          // ....
+         fuente_dir = (FuenteDireccional *) luzP4->ptrFuente(0);
+         fuente_dir->variarAngulo(angulo4, -INC);
+         cout << "práctica 4: ángulo " << angulo4 << " cambiado. Nuevo valor = " << (angulo4 ? fuente_dir->lati : fuente_dir->longi) << endl;
+         res = true;
 
          break ;
+
       default :
          break ;
    }
+   
    return res ;
-
 }
 
 // ---------------------------------------------------------------------
@@ -81,5 +100,7 @@ void P4_DibujarObjetos( ContextoVis & cv )
    // COMPLETAR: práctica 4: visualizar objetos
    //     (requiere activar las fuentes de luz y luego dibujar el grafo de escena)
    // ....
+   luzP4->activar();
+   objetos4[objetoActivo4]->visualizarGL(cv);
 
 }

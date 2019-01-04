@@ -36,9 +36,6 @@ MallaPLY::MallaPLY( const std::string & nombre_arch )
      tabla_tri.push_back( {caras[i], caras[i+1], caras[i+2]} );
    }
 
-   // calcular la tabla de normales
-   calcular_normales();
-
    // color de los vértices
    setColorVertices();
 

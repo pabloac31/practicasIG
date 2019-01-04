@@ -26,16 +26,18 @@ protected:
    void crearMallaRevol
    ( const std::vector<Tupla3f> & perfil_original,  // vértices del perfil original
      const bool crear_tapas,    // true para crear tapas
-     const bool cerrar_malla    // true para cerrar la malla
+     const bool cerrar_malla,    // true para cerrar la malla
+     const bool textura_auto    // true para generar coordenadas automaticamente
    ) ;
 
    public:
-      MallaRevol( const std::string & nombre );  
+      MallaRevol( const std::string & nombre );
       // crea una malla de revolucion
       MallaRevol( const std::string & nombre_arch,
                   const unsigned nperfiles,
                   const bool     crear_tapas,
-                  const bool     cerrar_malla ) ;
+                  const bool     cerrar_malla,
+                  const bool     textura_auto ) ;
 
 
 } ;
@@ -53,7 +55,8 @@ class Cilindro : public MallaRevol
   ( const int num_verts_per,    // número de vértices del perfil original (M )
     const unsigned nperfiles,   // número de perfiles (N )
     const bool crear_tapas,     // true para crear tapas
-    const bool cerrar_malla     // true para cerrar la malla
+    const bool cerrar_malla,    // true para cerrar la malla
+    const bool textura_auto     // true para generar coordenadas automaticamente
   ) ;
 
 } ;
@@ -71,7 +74,8 @@ class Cono : public MallaRevol
   ( const int num_verts_per,    // número de vértices del perfil original (M )
     const unsigned nperfiles,   // número de perfiles (N )
     const bool crear_tapas,     // true para crear tapas
-    const bool cerrar_malla     // true para cerrar la malla
+    const bool cerrar_malla,    // true para cerrar la malla
+    const bool textura_auto     // true para generar coordenadas automaticamente
   ) ;
 
 } ;
@@ -89,7 +93,8 @@ class Esfera : public MallaRevol
   ( const int num_verts_per,    // número de vértices del perfil original (M )
     const unsigned nperfiles,   // número de perfiles (N )
     const bool crear_tapas,     // true para crear tapas
-    const bool cerrar_malla     // true para cerrar la malla
+    const bool cerrar_malla,    // true para cerrar la malla
+    const bool textura_auto     // true para generar coordenadas automaticamente
   ) ;
 
 } ;

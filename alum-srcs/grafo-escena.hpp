@@ -181,6 +181,38 @@ public:
 };
 
 
+//----------------------------------------------------------------------
+class EscenaP4 : public NodoGrafoEscena
+{
+public:
+  EscenaP4();
+};
+
+class Lata : public NodoGrafoEscena
+{
+public:
+  Lata();
+};
+
+class PeonMadera : public NodoGrafoEscena
+{
+public:
+  PeonMadera();
+};
+
+class PeonBlanco : public NodoGrafoEscena
+{
+public:
+  PeonBlanco();
+};
+
+class PeonNegro : public NodoGrafoEscena
+{
+public:
+  PeonNegro();
+};
+
+
 #endif // GRAFO_ESCENA_HPP
 
 // *********************************************************************
