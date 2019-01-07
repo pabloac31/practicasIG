@@ -81,6 +81,7 @@ void MallaRevol::crearMallaRevol ( const std::vector<Tupla3f> & perfil_original,
     // Coordenadas de textura
 
     if (textura_auto && !cerrar_malla) {
+      cout << "generando coordenadas automáticamente..." << endl;
       float s_i, t_j;
       std::vector<float> d;
       d.push_back(0.0);

@@ -240,6 +240,8 @@ BrazoRob::BrazoRob()
   Matriz4f id = MAT_Ident();
   int ind_p1, ind_p2, ind_p3;
 
+  agregar( new MaterialBrazo() ); /////////////
+
   agregar( new Base() );
   agregar( MAT_Traslacion(0.0, 0.5, 0.0) );
   ind_p1 = agregar(id);                // Grado de libertad 1
@@ -370,11 +372,10 @@ Pinza::Pinza()
 EscenaP4::EscenaP4()
 {
   ponerNombre( "escena para la P4" );
-  //agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
 
   agregar( MAT_Escalado(2.5, 2.5, 2.5) );
   agregar( new Lata() );
-  agregar( MAT_Escalado(0.2, 0.2, 0.2) );
+  agregar( MAT_Escalado(0.15, 0.15, 0.15) );
   agregar( MAT_Traslacion(0.0, 1.4, 5.0) );
   agregar( new PeonMadera() );
   agregar( MAT_Traslacion(2.5, 0.0, 0.0) );

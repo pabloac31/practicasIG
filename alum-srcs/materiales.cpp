@@ -163,6 +163,7 @@ void Textura::activar(  )
    // glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR ) // interpolación (por defecto)
 
 }
+
 // *********************************************************************
 
 TexturaXY::TexturaXY( const std::string & nom ) : Textura(nom)
@@ -189,6 +190,7 @@ Material::Material()
    tex = NULL ;
    coloresCero() ;
 }
+
 // ---------------------------------------------------------------------
 
 Material::Material( const std::string & nombreArchivoJPG )
@@ -238,7 +240,7 @@ Material::Material( Textura * text, float ka, float kd, float ks, float exp )
 // ---------------------------------------------------------------------
 // crea un material con un color único para las componentes ambiental y difusa
 // en el lugar de textura (textura == NULL)
-Material::Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, float exp )
+Material::Material( const Tupla3f & colorAmbDif, float ks, float exp )
 {
    // COMPLETAR: práctica 4: inicializar material usando colorAmbDif,ka,kd,ks,exp
    // .....
@@ -325,13 +327,11 @@ void Material::activar(  )
    // cout << "textura = " << tex << endl;
 
 
-   if (tex != nullptr){
-     tex->activar();
-     // cout << "HABEMUS TEXTURA" << endl;
-   }
+   if (tex == nullptr)
+     glDisable(GL_TEXTURE_2D);
 
    else
-    glDisable( GL_TEXTURE_2D );
+    tex->activar();
 
   if (iluminacion) {
     glEnable( GL_LIGHTING );
@@ -381,16 +381,17 @@ FuenteLuz::FuenteLuz( const VectorRGB & p_color )
    //CError();
 }
 
-//**********************************************************************
+//----------------------------------------------------------------------
 
 FuenteLuz::~FuenteLuz()
 {
 
 }
 
-//**********************************************************************
+//----------------------------------------------------------------------
 
-FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial, const VectorRGB & p_color ) : FuenteLuz( p_color )
+FuenteDireccional::FuenteDireccional( GLfloat alpha_inicial, GLfloat beta_inicial, const VectorRGB & p_color )
+: FuenteLuz(p_color)
 {
   longi_ini = longi = alpha_inicial;
   lati_ini = lati = beta_inicial;
@@ -400,28 +401,25 @@ FuenteDireccional::FuenteDireccional( float alpha_inicial, float beta_inicial, c
 
 void FuenteDireccional::activar()
 {
-   // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
-   // .....
-   if (ind_fuente != -1) {
-     glEnable( GL_LIGHT0 + ind_fuente );
+  if ( ind_fuente != -1 ) {
+    // Activar fuente
+    glEnable(GL_LIGHT0+ind_fuente);
+    // Configuramos los colores
+    glLightfv(GL_LIGHT0+ind_fuente, GL_AMBIENT, col_ambiente);
+    glLightfv(GL_LIGHT0+ind_fuente, GL_DIFFUSE, col_difuso);
+    glLightfv(GL_LIGHT0+ind_fuente, GL_SPECULAR, col_especular);
 
-     // Configuramos los colores
-     glLightfv( GL_LIGHT0 + ind_fuente, GL_AMBIENT, col_ambiente );
-     glLightfv( GL_LIGHT0 + ind_fuente, GL_DIFFUSE, col_difuso );
-     glLightfv( GL_LIGHT0 + ind_fuente, GL_SPECULAR, col_especular );
+    const Tupla4f ejeZ = {0.0, 0.0, 1.0, 0.0};  // el último valor determina el tipo (direccional)
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix() ;
+    glLoadIdentity();                   // M = Identidad
+    glRotatef( longi, 0.0, 1.0, 0.0 );  // rotación alpha grados (eje Y)
+    glRotatef( lati, -1.0, 0.0, 0.0 );  // rotación beta grados (eje -X)
+    glLightfv( GL_LIGHT0+ind_fuente, GL_POSITION, ejeZ);   // paralela eje Z (0,0,1)
+    glPopMatrix();
+  }
 
-     // Configuramos posicion/direccion (coordenadas polares)
-     const float ejeZ[4] = {0.0, 0.0, 1.0, 0.0};    // el último valor determina el tipo (direccional)
-     glMatrixMode( GL_MODELVIEW );
-     glPushMatrix();
-     glLoadIdentity();    // M = Ide
-     glRotatef( longi, 0.0, 1.0, 0.0 );
-     glRotatef( lati, -1.0, 0.0, 0.0 );
-     glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, ejeZ );
-     glPopMatrix();
-   }
-
-   else
+  else
     std::cout << "ERROR: intento de activar una luz no válida" << std::endl;
 }
 
@@ -460,31 +458,31 @@ bool FuenteDireccional::gestionarEventoTeclaEspecial( int key )
    return actualizar ;
 }
 
-//**********************************************************************
+//----------------------------------------------------------------------
 
-void FuenteDireccional::variarAngulo( unsigned angulo, float incremento )
+void FuenteDireccional::variarAngulo(unsigned angulo, float incremento)
 {
   if (angulo == 0)
-    longi += incremento;
-
-  else
-    lati += incremento;
+  longi += incremento;
+  else {
+    if (incremento > 0)
+    lati = std::min(lati + incremento, 90.0f);
+    else
+    lati = std::max(lati + incremento, -90.0f);
+  }
 }
+//----------------------------------------------------------------------
 
-//**********************************************************************
-
-FuentePosicional::FuentePosicional( const Tupla3f & pos, const VectorRGB & p_color ) : FuenteLuz( p_color )
+FuentePosicional::FuentePosicional( const Tupla3f & pos, const VectorRGB & p_color )
+: FuenteLuz(p_color)
 {
   posicion = pos;
 }
-
 
 //----------------------------------------------------------------------
 
 void FuentePosicional::activar()
 {
-   // COMPLETAR: práctica 4: activar una fuente de luz (en GL_LIGHT0 + ind_fuente)
-   // .....
    if (ind_fuente != -1) {
      glEnable( GL_LIGHT0 + ind_fuente );
 
@@ -495,7 +493,7 @@ void FuentePosicional::activar()
 
      // Configuramos posicion
      Tupla4f pos = {posicion(X), posicion(Y), posicion(Z), 1.0};  // el último valor determina el tipo (posicional)
-     glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, posicion );
+     glLightfv( GL_LIGHT0 + ind_fuente, GL_POSITION, pos );
    }
 
    else
@@ -553,37 +551,40 @@ ColFuentesLuz::~ColFuentesLuz()
    }
 }
 
-//----------------------------------------------------------------------
+
+//**********************************************************************
+
 MaterialLata::MaterialLata()
-{
-  Material( new Textura("../imgs/lata-coke.jpg"), 0.2, 1.0, 0.5, 1.0 );
-}
+  : Material(new Textura("../imgs/lata-coke.jpg"), 0.4, 0.4, 0.8, 0.9)
+{}
 
 MaterialTapasLata::MaterialTapasLata()
-{
-  Material( nullptr, 0.2, 1.0, 0.5, 1.0 );
-}
-
-MaterialPeonMadera::MaterialPeonMadera()
-{
-  Material( new TexturaXY( "../imgs/text-madera.jpg" ), 0.2, 1.0, 0.4, 1.0 );
-}
-
-MaterialPeonBlanco::MaterialPeonBlanco()
-{
-  Material( nullptr, 0.8, 0.8, 1.0, 5.0 );
-}
+  : Material(NULL, 0.3, 1.0, 0.5, 0.9)
+{}
 
 MaterialPeonNegro::MaterialPeonNegro()
-{
-  Material( nullptr, 0.0, 0.05, 0.2, 1.0 );
-}
+  : Material(NULL, 0.0, 0.01, 0.1, 0.8)
+{}
+
+MaterialPeonBlanco::MaterialPeonBlanco()
+  : Material(NULL, 0.5, 0.4, 0.2, 3.0)
+{}
+
+MaterialPeonMadera::MaterialPeonMadera()
+  : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.1, 1.0, 0.4, 1.0)
+{}
 
 ColFuentesLuzP4::ColFuentesLuzP4()
 {
-  const VectorRGB color1 = VectorRGB(0.4, 0.4, 0.4, 1.0);
-  const VectorRGB color2 = VectorRGB(0.4, 0.4, 0.4, 1.0);
+  const VectorRGB col1 = VectorRGB(0.5, 0.5, 0.5, 1.0);
+  const VectorRGB col2 = VectorRGB(0.3, 0.3, 0.3, 1.0);
 
-  insertar( new FuenteDireccional( -10.0, 30.0, color1 ) );
-  insertar( new FuentePosicional( {0.0, 3.0, 3.0}, color2 ) );
+  insertar( new FuenteDireccional( -30.0, 60.0, col1 ) );
+  insertar( new FuentePosicional( {2.0, 4.0, 2.0}, col2 ) );
 }
+
+//**********************************************************************
+
+MaterialBrazo::MaterialBrazo()
+: Material(new Textura("../imgs/text-metal.jpg"), 0.4, 0.4, 0.8, 0.9)
+{}

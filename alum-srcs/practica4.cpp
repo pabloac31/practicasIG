@@ -86,7 +86,7 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
       default :
          break ;
    }
-   
+
    return res ;
 }
 
