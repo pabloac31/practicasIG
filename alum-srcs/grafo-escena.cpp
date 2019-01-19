@@ -91,6 +91,9 @@ void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
    for (unsigned i = 0; i < entradas.size(); i++) {
      switch (entradas[i].tipo) {
        case TipoEntNGE::objeto:
+        if (cv.modoSeleccionFBO && identificador >= 0) {
+          FijarColorIdent(identificador);
+        }
         entradas[i].objeto->visualizarGL(cv);    // visualizarlo
        break;
 
@@ -100,7 +103,9 @@ void NodoGrafoEscena::visualizarGL( ContextoVis & cv )
        break;
 
        case TipoEntNGE::material:
-        cv.pilaMateriales.activarMaterial( entradas[i].material );
+        if (cv.modoVis == modoColorNodoPlano || cv.modoVis == modoMateriales) {
+          cv.pilaMateriales.activarMaterial( entradas[i].material );
+        }
        break;
      }
    }
@@ -182,6 +187,20 @@ void NodoGrafoEscena::calcularCentroOC()
    //    en coordenadas de objeto (hay que hacerlo recursivamente)
    //   (si el centro ya ha sido calculado, no volver a hacerlo)
    // ........
+   Matriz4f mmod = MAT_Ident();
+   vector<Tupla3f> centros_hijos;
+
+   for (EntradaNGE &entrada : entradas) {
+     if (entrada.tipo == TipoEntNGE::objeto) {
+       entrada.objeto->calcularCentroOC();  // llamada recursiva
+       centros_hijos.push_back(mmod * entrada.objeto->leerCentroOC());
+     }
+     else if (entrada.tipo == TipoEntNGE::transformacion)
+     mmod = mmod * (*entrada.matriz);
+   }
+
+   ponerCentroOC(calcularCentroCajaEnglobante(centros_hijos));
+   centro_calculado = true;
 
 }
 // -----------------------------------------------------------------------------
@@ -195,8 +214,33 @@ bool NodoGrafoEscena::buscarObjeto
    Tupla3f &         centro_wc   // (salida) centro del objeto en coordenadas del mundo
 )
 {
-   // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
-   // ........
+  // COMPLETAR: práctica 5: buscar un sub-objeto con un identificador
+  // ........
+  assert( 0 < ident_busc ); // se usa el valor -1
+
+  bool encontrado = false;
+
+  if (identificador > 0 && !centro_calculado)  // no calcular si no se puede seleccionar
+    calcularCentroOC();
+
+  if (identificador == ident_busc) {
+    centro_wc = mmodelado * leerCentroOC();
+    *objeto = this; // puntero al puntero del objeto
+    // return true;
+    encontrado = true;
+  }
+
+  else {
+    Matriz4f mmodelado_aux = mmodelado;
+    for (int i = 0; i < entradas.size() && !encontrado; i++) {
+      if (entradas[i].tipo == TipoEntNGE::transformacion)
+        mmodelado_aux = mmodelado_aux * (*entradas[i].matriz);
+      else if (entradas[i].tipo == TipoEntNGE::objeto)
+        encontrado = entradas[i].objeto->buscarObjeto(ident_busc, mmodelado_aux, objeto, centro_wc);
+    }
+  }
+
+  return encontrado;
 
 }
 

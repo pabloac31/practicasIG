@@ -16,6 +16,7 @@ Objeto3D::Objeto3D()
    ponerIdentificador( 0 );
    ponerNombre("objeto anónimo");
    ponerCentroOC( Tupla3f( 0.0, 0.0, 0.0 ) );
+   centro_calculado = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -103,5 +104,5 @@ Objeto3D::~Objeto3D()
 // fijar color para un nodo
 void Objeto3D::fijarColorNodo( const Tupla3f & color )
 {
-  
+
 }

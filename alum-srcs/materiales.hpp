@@ -105,17 +105,17 @@ public:
   void enviar() ;    // envia la imagen a la GPU (gluBuild2DMipmaps)
 
   bool
-  enviada ; // true si ha sido enviada, false en otro caso
+    enviada ; // true si ha sido enviada, false en otro caso
   GLuint
-  ident_textura ;// 'nombre' o identif. de textura para OpenGL
+    ident_textura ;// 'nombre' o identif. de textura para OpenGL
   jpg::Imagen *
-  imagen ;       // objeto con los bytes de la imagen de textura
+    imagen ;       // objeto con los bytes de la imagen de textura
   ModoGenCT
-  modo_gen_ct ;  // modo de generacion de coordenadas de textura
+    modo_gen_ct ;  // modo de generacion de coordenadas de textura
   // (desactivadas si modo_gen_ct == mgct_desactivada)
   float
-  coefs_s[4] ,   // si 'modo_gen_ct != desactivadas', coeficientes para la coord. S
-  coefs_t[4] ;   // idem para coordenada T
+    coefs_s[4] ,   // si 'modo_gen_ct != desactivadas', coeficientes para la coord. S
+    coefs_t[4] ;   // idem para coordenada T
 } ;
 
 // *********************************************************************
@@ -160,7 +160,7 @@ public:
 
   // crea un material con un color único para las componentes ambiental y difusa
   // en el lugar de textura (textura == NULL)
-  Material( const Tupla3f & colorAmbDif, float ks, float exp ) ;
+  Material( const Tupla3f & colorAmbDif, float ka, float kd, float ks, float exp ) ;
 
   // activa un material (por ahora en el cauce fijo)
   void activar() ;
@@ -176,15 +176,15 @@ public:
   std::string nombre_mat ;  // nombre del material
 
   bool
-  iluminacion ;  // true si el material requiere activar iluminación,
+    iluminacion ;  // true si el material requiere activar iluminación,
   // false si requiere desactivarla
   Textura *
-  tex ;          // si !=NULL, el material tiene esta textura
+    tex ;          // si !=NULL, el material tiene esta textura
   VectorRGB
-  color ;        // color del material cuando iluminacion=false
+    color ;        // color del material cuando iluminacion=false
   ColoresMat
-  del,           // reflectividades de caras delanteras, si iluminacion= true
-  tra ;          // reflectividades de caras traseras, si iluminacion=true
+    del,           // reflectividades de caras delanteras, si iluminacion= true
+    tra ;          // reflectividades de caras traseras, si iluminacion=true
 } ;
 
 //**********************************************************************
@@ -229,13 +229,13 @@ class FuenteDireccional : public FuenteLuz
 {
 protected:
   float
-  longi_ini,  // valor inicial de 'longi'
-  lati_ini ;  // valor inicial de 'lati'
+    longi_ini,  // valor inicial de 'longi'
+    lati_ini ;  // valor inicial de 'lati'
 
 public:
   float
-  longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360)
-  lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90)
+    longi,      // longitud actual de la fuente direccional (en grados, entre 0 y 360)
+    lati ;      // latitud actual de la fuente direccional (en grados, entre -90 y 90)
 
   // inicializa la fuente de luz
   // p_color     == color de la fuente de luz (amb, dif y spec )
@@ -255,7 +255,7 @@ public:
 class FuentePosicional : public FuenteLuz
 {
 protected:
-  Tupla3f posicion;
+  Tupla4f posicion;
 
 public:
 

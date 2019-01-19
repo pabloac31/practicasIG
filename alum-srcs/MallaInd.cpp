@@ -9,7 +9,7 @@
 #include <tuplasg.hpp>
 #include "MallaInd.hpp"   // declaración de 'ContextoVis'
 
-#define TIPO_MI 1         // glBegin-End(0) - glDrawElements(1)
+// #define TIPO_MI 1         // glBegin-End(0) - glDrawElements(1)
 #define USAR_COLORES 0    // usar patron amarillo-negro
 
 // *****************************************************************************
@@ -24,6 +24,24 @@ GLuint VBO_Crear( GLuint tipo, GLuint tamanio, GLvoid * puntero )
   glBufferData( tipo, tamanio, puntero, GL_STATIC_DRAW ); // transferencia RAM -> GPU
   glBindBuffer( tipo, 0 );        // desactivación del VBO (activar 0)
   return id_vbo;
+}
+
+// -----------------------------------------------------------------------------
+
+Tupla3f calcularCentroCajaEnglobante(const std::vector<Tupla3f> & ver)
+{
+  Tupla3f max, min = ver[0];
+
+  for(Tupla3f vertice : ver){
+    max[0] = std::max(vertice(X), max(X));
+    max[1] = std::max(vertice(Y), max(Y));
+    max[2] = std::max(vertice(Z), max(Z));
+    min[0] = std::min(vertice(X), min(X));
+    min[1] = std::min(vertice(Y), min(Y));
+    min[2] = std::min(vertice(Z), min(Z));
+  }
+
+  return (max+min) / 2;
 }
 
 // *****************************************************************************
@@ -52,6 +70,7 @@ void MallaInd::crearVBOs()
 
   vbos_creados = true;
 }
+
 
 // -----------------------------------------------------------------------------
 
@@ -108,28 +127,28 @@ void MallaInd::calcular_normales()
 
 void MallaInd::visualizarDE_MI( ContextoVis & cv )
 {
-  #if TIPO_MI == 0  // glBegin-glEnd
-
-  glBegin(GL_TRIANGLES);
-  for (unsigned i = 0; i < tabla_tri.size(); i++) {
-    for (unsigned j = 0; j < 3; j++) {
-      unsigned ind_ver = tabla_tri[i](j);
-
-      if (usar_texturas) {  // enviamos normales y cctt
-        glNormal3fv(tabla_nor_ver[ind_ver]);
-        glTexCoord2fv(coor_textura[ind_ver]);
-      }
-
-      if (col_ver.size() > 0)
-      glColor3fv(col_ver[ind_ver]); // enviamos colores
-
-      glVertex3fv(tabla_ver[ind_ver]);
-    }
-  }
-
-  glEnd();
-
-  #else     // glDrawElements
+  // #if TIPO_MI == 0  // glBegin-glEnd
+  //
+  // glBegin(GL_TRIANGLES);
+  // for (unsigned i = 0; i < tabla_tri.size(); i++) {
+  //   for (unsigned j = 0; j < 3; j++) {
+  //     unsigned ind_ver = tabla_tri[i](j);
+  //
+  //     if (usar_texturas) {  // enviamos normales y cctt
+  //       glNormal3fv(tabla_nor_ver[ind_ver]);
+  //       glTexCoord2fv(coor_textura[ind_ver]);
+  //     }
+  //
+  //     if (col_ver.size() > 0)
+  //     glColor3fv(col_ver[ind_ver]); // enviamos colores
+  //
+  //     glVertex3fv(tabla_ver[ind_ver]);
+  //   }
+  // }
+  //
+  // glEnd();
+  //
+  // #else     // glDrawElements
 
   if (usar_texturas) {
     glNormalPointer( GL_FLOAT, 0, tabla_nor_ver.data() );
@@ -156,7 +175,7 @@ void MallaInd::visualizarDE_MI( ContextoVis & cv )
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
 
-  #endif
+  // #endif
 }
 
 // ----------------------------------------------------------------------------
@@ -211,6 +230,8 @@ void MallaInd::visualizarDE_MI_Plano(ContextoVis & cv)
     glNormal3fv(tabla_nor_caras[i]);
     for (unsigned j = 0; j < 3; j++) {
       unsigned ind_ver = tabla_tri[i](j);
+      if (col_ver.size() > 0)
+      glColor3fv(col_ver[ind_ver]);
       if (coor_textura.size() > 0)
         glTexCoord2fv(coor_textura[ind_ver]);
 
@@ -228,41 +249,48 @@ void MallaInd::visualizarGL( ContextoVis & cv )
   // usamos las texturas en los modos 'modoColorNodoPlano' y 'modoMateriales'
   usar_texturas = cv.modoVis == modoColorNodoPlano || cv.modoVis == modoMateriales;
 
-  if (!usar_texturas) {
+  if (!usar_texturas) { // desactivamos iluminacion y texturas en los modos correspondientes
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
   }
   else if (!normales_creadas)
     calcular_normales();
 
-  switch (cv.modoVis) {
-    case modoPuntos:
-     glPointSize(3);
-     glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
-     break;
-    case modoAlambre:
-     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-     glShadeModel( GL_SMOOTH );
-     break;
-    case modoSolido:
-     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-     glShadeModel( GL_SMOOTH );
-     break;
-    case modoColorNodoPlano:
-      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-      glShadeModel( GL_FLAT ); // activa sombreado plano
-     break;
-    case modoMateriales: // modoColorNodoSuave
+  if (cv.modoSeleccionFBO) {  // modo seleccion P5
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_FLAT);  // sombreado plano necesario
+  }
+
+  else {
+    switch (cv.modoVis) {
+      case modoPuntos:
+      glPointSize(3);
+      glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
+      break;
+      case modoAlambre:
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      glShadeModel( GL_SMOOTH );
+      break;
+      case modoSolido:
       glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
       glShadeModel( GL_SMOOTH );
-     break;
-    default:
-     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-     glShadeModel( GL_SMOOTH );
+      break;
+      case modoColorNodoPlano:
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+      glShadeModel( GL_FLAT ); // activa sombreado plano
+      break;
+      case modoMateriales: // modoColorNodoSuave (goround)
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+      glShadeModel( GL_SMOOTH );
+      break;
+      default:
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      glShadeModel( GL_SMOOTH );
+    }
   }
 
   // Visualizamos según el modo
-  if (cv.usarVBOs){
+  if (cv.usarVBOs && !cv.modoSeleccionFBO){
     if ( !vbos_creados )
       crearVBOs();
     visualizarDE_VBOs(cv);
@@ -308,6 +336,15 @@ void MallaInd::fijarColorNodo( const Tupla3f & nuevo_color )
   col_ver.clear();
   for (unsigned i = 0; i < num_ver; i++)
   col_ver.push_back( nuevo_color );
+}
+
+// -----------------------------------------------------------------------------
+
+void MallaInd::calcularCentroOC() {
+  if (!centro_calculado) {
+    ponerCentroOC(calcularCentroCajaEnglobante(tabla_ver));
+    centro_calculado = true;
+  }
 }
 
 

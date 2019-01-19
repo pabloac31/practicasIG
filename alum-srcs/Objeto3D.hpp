@@ -16,12 +16,14 @@
 
 class Objeto3D
 {
-   private:
+protected:
       std::string  nombre_obj ;    // nombre asignado al objeto
       Tupla3f      centro_oc ;     // punto central o representativo del objeto, en coordenadas de objeto
       int          identificador ; // identificador de este objeto
                                    // 0: no tiene identificador, -1: identificador del padre,
                                    // >0: tiene este identificador
+
+      bool centro_calculado;       // indica si el centro del objeto se ha calulado
 
    public:
       // pone el identificador a '0', siempre
@@ -72,7 +74,7 @@ class Objeto3D
       virtual bool buscarObjeto( const int ident_busc,
          const Matriz4f & mmodelado, Objeto3D ** objeto, Tupla3f & centro_wc )  ;
 
-      // fijar color para un nodo 
+      // fijar color para un nodo
       virtual void fijarColorNodo( const Tupla3f & color );
 
 } ;

@@ -12,6 +12,13 @@
 
 #include "Objeto3D.hpp"   // declaración de 'Objeto3D'
 
+
+// ---------------------------------------------------------------------
+// funciones auxiliares
+
+// calcula el centro del objeto
+Tupla3f calcularCentroCajaEnglobante(const std::vector<Tupla3f> & ver);
+
 // ---------------------------------------------------------------------
 // clase para objetos gráficos genéricos
 
@@ -66,6 +73,8 @@ public:
   void setColorVertices(std::vector<Tupla3f> * colores = nullptr);
   // Fijar el mismo color para todos los vértices
   virtual void fijarColorNodo(const Tupla3f& color);
+  // Calcular el centro del objeto
+  virtual void calcularCentroOC();
 } ;
 // ---------------------------------------------------------------------
 

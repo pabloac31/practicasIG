@@ -50,41 +50,39 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
 {
    bool res = false  ; // valor devuelto: es true solo cuando se ha procesado alguna tecla
 
-   FuenteDireccional * fuente_dir;
+   int key = -1;
 
    switch ( toupper( tecla ) )
    {
+
       case 'G' :
          // COMPLETAR: práctica 4: activar el siguiente ángulo (longitud o latitud)
          // ....
          angulo4 = angulo4==0 ? 1 : 0;
-         cout << "práctica 4: ángulo activo = " << angulo4 << endl;
-         res = true;
 
          break ;
 
       case '>' :
          // COMPLETAR: práctica 4: incrementar el ángulo activo
          // ....
-         fuente_dir = (FuenteDireccional *) luzP4->ptrFuente(0);
-         fuente_dir->variarAngulo(angulo4, INC);
-         cout << "práctica 4: ángulo " << angulo4 << " cambiado. Nuevo valor = " << (angulo4 ? fuente_dir->lati : fuente_dir->longi) << endl;
-         res = true;
+         key = angulo4 == 0 ? GLFW_KEY_UP : GLFW_KEY_RIGHT;
 
          break ;
 
       case '<' :
          // COMPLETAR: práctica 4: decrementar el ángulo activo
          // ....
-         fuente_dir = (FuenteDireccional *) luzP4->ptrFuente(0);
-         fuente_dir->variarAngulo(angulo4, -INC);
-         cout << "práctica 4: ángulo " << angulo4 << " cambiado. Nuevo valor = " << (angulo4 ? fuente_dir->lati : fuente_dir->longi) << endl;
-         res = true;
+         key = angulo4 == 0 ? GLFW_KEY_DOWN : GLFW_KEY_LEFT;
 
          break ;
 
       default :
          break ;
+   }
+
+   if (key != -1) {
+     FuenteDireccional * fuente_dir = (FuenteDireccional *)(luzP4->ptrFuente(0));
+     res = fuente_dir->gestionarEventoTeclaEspecial(key);   // usamos la funcion de materiales.cpp
    }
 
    return res ;
@@ -102,5 +100,6 @@ void P4_DibujarObjetos( ContextoVis & cv )
    // ....
    luzP4->activar();
    objetos4[objetoActivo4]->visualizarGL(cv);
+   glDisable(GL_LIGHTING);
 
 }
