@@ -407,7 +407,7 @@ void FuenteDireccional::activar()
     const Tupla4f ejeZ = {0.0, 0.0, 1.0, 0.0};  // el último valor determina el tipo (direccional)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix() ;
-    glLoadIdentity();                   // M = Identidad
+    //glLoadIdentity();                   // M = Identidad
     glRotatef( longi, 0.0, 1.0, 0.0 );  // rotación alpha grados (eje Y)
     glRotatef( lati, -1.0, 0.0, 0.0 );  // rotación beta grados (eje -X)
     glLightfv( GL_LIGHT0+ind_fuente, GL_POSITION, ejeZ);   // paralela eje Z (0,0,1)
@@ -510,8 +510,6 @@ void ColFuentesLuz::insertar( FuenteLuz * pf )  // inserta una nueva
 
 void ColFuentesLuz::activar()
 {
-   // COMPLETAR: práctica 4: activar una colección de fuentes de luz
-   // .....
 
    glEnable( GL_LIGHTING );    // activar iluminacion
    glEnable( GL_NORMALIZE );  ////////////////////////////
@@ -546,36 +544,36 @@ ColFuentesLuz::~ColFuentesLuz()
 //**********************************************************************
 
 MaterialLata::MaterialLata()
-  : Material(new Textura("../imgs/lata-coke.jpg"), 0.4, 0.4, 0.8, 0.9)
+  : Material(new Textura("../imgs/lata-coke.jpg"), 0.4, 0.4, 0.8, 15.0)
 {}
 
 MaterialTapasLata::MaterialTapasLata()
-  : Material(NULL, 0.3, 1.0, 0.5, 0.9)
+  : Material({0.9, 0.9, 0.9}, 0.3, 0.3, 0.4, 1.0)
 {}
 
 MaterialPeonNegro::MaterialPeonNegro()
-  : Material(NULL, 0.0, 0.01, 0.1, 0.8)
+  : Material({0.1, 0.1, 0.1}, 0.0, 0.8, 0.2, 0.5)
 {}
 
 MaterialPeonBlanco::MaterialPeonBlanco()
-  : Material(NULL, 0.5, 0.4, 0.2, 3.0)
+  : Material({1.0, 1.0, 1.0}, 0.3, 0.7, 0.0, 8.0)
 {}
 
 MaterialPeonMadera::MaterialPeonMadera()
-  : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.1, 1.0, 0.4, 1.0)
+  : Material(new TexturaXY("../imgs/text-madera.jpg"), 0.1, 0.6, 0.3, 1.0)
 {}
 
 ColFuentesLuzP4::ColFuentesLuzP4()
 {
-  const VectorRGB col1 = VectorRGB(0.5, 0.5, 0.5, 1.0);
-  const VectorRGB col2 = VectorRGB(0.3, 0.3, 0.3, 1.0);
+  const VectorRGB col1 = VectorRGB(0.4, 0.4, 0.4, 0.0);
+  const VectorRGB col2 = VectorRGB(0.5, 0.5, 0.5, 1.0);
 
   insertar( new FuenteDireccional( -30.0, 60.0, col1 ) );
-  insertar( new FuentePosicional( {2.0, 4.0, 2.0}, col2 ) );
+  insertar( new FuentePosicional( {2.0, 3.0, 2.0}, col2 ) );
 }
 
 //**********************************************************************
 
 MaterialBrazo::MaterialBrazo()
-: Material(new Textura("../imgs/text-metal.jpg"), 0.4, 0.4, 0.8, 0.9)
+: Material(new Textura("../imgs/text-metal.jpg"), 0.2, 0.2, 0.6, 4.9)
 {}

@@ -433,6 +433,7 @@ EscenaP4::EscenaP4()
 Lata::Lata()
 {
   ponerNombre( "lata" );
+  ponerIdentificador(1);
 
   agregar( new MaterialLata() );
   agregar( new MallaRevol("../plys/lata-pcue.ply", 20, false, false, true) );
@@ -447,6 +448,7 @@ Lata::Lata()
 PeonMadera::PeonMadera()
 {
   ponerNombre( "peón de madera" );
+  ponerIdentificador(2);
 
   agregar( new MaterialPeonMadera() );
   agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
@@ -456,6 +458,7 @@ PeonMadera::PeonMadera()
 PeonBlanco::PeonBlanco()
 {
   ponerNombre( "peón blanco" );
+  ponerIdentificador(3);
 
   agregar( new MaterialPeonBlanco() );
   agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
@@ -465,6 +468,7 @@ PeonBlanco::PeonBlanco()
 PeonNegro::PeonNegro()
 {
   ponerNombre( "peón negro" );
+  ponerIdentificador(4);
 
   agregar( new MaterialPeonNegro() );
   agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );

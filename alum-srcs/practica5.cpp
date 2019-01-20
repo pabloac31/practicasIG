@@ -232,7 +232,7 @@ void P5_ClickIzquierdo( int x, int y )
 
    if (objetos5[objetoActivo5]->buscarObjeto(id, m, &obj, centro_wc)) {
      camaras[camaraActiva]->modoExaminar(centro_wc);
-     cout << "práctica 5: objeto seleccionado: " << obj->leerNombre() << ". Centro del objeto: " << centro_wc << endl;
+     cout << "práctica 5: objeto seleccionado: " << obj->leerNombre() << endl;
    }
 
    else
