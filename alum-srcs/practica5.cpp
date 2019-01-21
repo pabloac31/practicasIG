@@ -26,7 +26,7 @@ static const float INC = 5.0;   // deplazamiento en el eje Z de la camara actual
 static constexpr int numObjetos5 = 1 ;
 static unsigned objetoActivo5 = 0 ;
 static NodoGrafoEscena * objetos5[numObjetos5] = { nullptr };
-static ColFuentesLuzP4 * luzP5 = nullptr;
+static ColFuentesLuzP5 * luzP5 = nullptr;
 
 // camaras
 static constexpr int numCamaras =  4;
@@ -50,8 +50,8 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
    // COMPLETAR: práctica 5: inicializar las variables de la práctica 5 (incluyendo el viewport)
    // .......
    viewport = Viewport(0, 0, vp_ancho, vp_alto);
-   luzP5 = new ColFuentesLuzP4();
-   objetos5[0] = new EscenaP4();
+   luzP5 = new ColFuentesLuzP5();
+   objetos5[0] = new EscenaP5();
 
    float ratio = (float)vp_alto / vp_ancho;
 
@@ -90,7 +90,8 @@ void P5_DibujarObjetos( ContextoVis & cv )
    //      (se supone que la camara actual ya está activada)
    // .......
    luzP5->activar();
-   objetos5[objetoActivo5]->visualizarGL(cv);
+   if(objetos5[objetoActivo5] != nullptr)
+    objetos5[objetoActivo5]->visualizarGL(cv);
    glDisable(GL_LIGHTING);
 
 }

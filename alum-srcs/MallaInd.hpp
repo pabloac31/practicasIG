@@ -12,6 +12,8 @@
 
 #include "Objeto3D.hpp"   // declaración de 'Objeto3D'
 
+#include <matrices-tr.hpp>
+
 
 // ---------------------------------------------------------------------
 // funciones auxiliares
@@ -95,5 +97,13 @@ public:
   // crea un tetraedro de lado 1
   Tetraedro();
 };
+
+
+//---------------------------------------------------------------------------------
+// EJERCICIOS
+
+void tronco();
+void arbol(unsigned resto_niveles);
+void poligono(int lados, float radio);
 
 #endif

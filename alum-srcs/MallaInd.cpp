@@ -415,3 +415,121 @@ Tetraedro::Tetraedro()
 
 }
 // *****************************************************************************
+
+
+
+//---------------------------------------------------------------------------------
+// EJERCICIOS RELACIÓN
+// 33-.
+
+void tronco()
+{
+  // glDisable(GL_DEPTH_TEST);
+  // relleno (tres polígonos)
+  glColor3f(0.5,0.8,1.0);
+  glBegin(GL_POLYGON);
+  glVertex2f(0.0,0.0);
+  glVertex2f(1.0,0.0);
+  glVertex2f(1.0,1.0);
+  glVertex2f(0.5,1.5);
+  glVertex2f(0.0,1.5);
+  glEnd();
+  glBegin(GL_POLYGON);
+  glVertex2f(0.5,1.5);
+  glVertex2f(1.0,1.0);
+  glVertex2f(2.0,2.0);
+  glVertex2f(1.5,2.5);
+  glEnd();
+  glBegin(GL_POLYGON);
+  glVertex2f(0.5,1.5);
+  glVertex2f(0.0,3.0);
+  glVertex2f(-0.5,3.0);
+  glVertex2f(0.0,1.5);
+  glEnd();
+  // aristas (tres polilíneas)
+  glColor3f(0,0,1);
+  glLineWidth(2);
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(1.0,0.0); // 1
+  glVertex2f(1.0,1.0); // 2
+  glVertex2f(2.0,2.0); // 3
+  glEnd() ;
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(1.5,2.5); // 4
+  glVertex2f(0.5,1.5); // 5
+  glVertex2f(0.0,3.0); // 6
+  glEnd() ;
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(-0.5,3.0); // 7
+  glVertex2f(0.0,1.5); // 8
+  glVertex2f(0.0,0.0); // 0
+  glEnd();
+  // fin de 'tronco'
+}
+
+// 34-.
+const GLfloat mr2 = 0.5*sqrtf(2.0);
+void arbol(unsigned resto_niveles)
+{
+  tronco();
+  if (resto_niveles > 0) {
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glTranslatef( 1.5, 2.5, 0.0 );
+    glScalef( mr2, mr2, 1.0 );
+    glRotatef( -45.0, 0.0, 0.0, 1.0 );
+    arbol( resto_niveles-1 ); // sub-árbol a la derecha
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef( -0.5, 3.0, 0.0 );
+    glScalef( 0.5, 0.5, 0.5 );
+    arbol( resto_niveles-1 ); // sub-árbol la izquierda
+    glPopMatrix();
+  }
+}
+
+void poligono(int n, float radio)
+{
+  float alpha = 360.0 / n;
+
+  Matriz4f m = MAT_Rotacion(alpha, 0,0,1);
+
+  auto p = Tupla3f(1,0,0);
+
+  std::vector<Tupla3f> v;
+  for(unsigned i = 0; i<n; ++i){
+    v.push_back(p);
+    p = m*p;
+  }
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glColor3f(0,0,1);
+  glVertexPointer(3, GL_FLOAT, 0, v.data());
+  glDrawArrays(GL_POLYGON,0 ,n);
+  glDisableClientState(GL_VERTEX_ARRAY);
+
+  auto u = (1.0 - 0.1)/n;
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  for(unsigned i=0; i< n ; ++i){
+    auto r = 1.0 - i*u;
+    auto p0 = v[i%n] * r;
+    auto p1 = v[(i+1)%n] * r;
+    glColor3f(0.5,0.8,1.0);
+    glBegin(GL_TRIANGLES);
+      glVertex3fv(p0);
+      glVertex3fv(p1);
+      glVertex3fv(Tupla3f(0.0,0.0,0.0));
+    glEnd();
+
+    glColor3f(0,0,1);
+    glBegin(GL_LINES);
+      glVertex3fv(p0);
+      glVertex3fv(p1);
+    glEnd();
+  }
+
+  glDisable(GL_DEPTH_TEST);
+}

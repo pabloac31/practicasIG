@@ -297,6 +297,12 @@ public:
   MaterialLata();
 };
 
+class MaterialLata2 : public Material
+{
+public:
+  MaterialLata2();
+};
+
 class MaterialTapasLata : public Material
 {
 public:
@@ -326,6 +332,13 @@ class ColFuentesLuzP4 : public ColFuentesLuz
 public:
   ColFuentesLuzP4();
 };
+
+class ColFuentesLuzP5 : public ColFuentesLuz
+{
+public:
+  ColFuentesLuzP5();
+};
+
 
 //**********************************************************************
 // Práctica 3

@@ -23,6 +23,8 @@
 #include "shaders.hpp"
 #include "grafo-escena.hpp"
 #include "MallaRevol.hpp"
+#include "MallaPLY.hpp"
+
 
 using namespace std ;
 
@@ -432,10 +434,25 @@ EscenaP4::EscenaP4()
 // -----------------------------------------------------------------------------
 Lata::Lata()
 {
-  ponerNombre( "lata" );
+  ponerNombre( "lata-coke" );
   ponerIdentificador(1);
 
   agregar( new MaterialLata() );
+  agregar( new MallaRevol("../plys/lata-pcue.ply", 20, false, false, true) );
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-pinf.ply", 20, false, false, true) );
+  agregar( new MaterialTapasLata() );
+  agregar( new MallaRevol("../plys/lata-psup.ply", 20, false, false, true) );
+
+}
+
+// -----------------------------------------------------------------------------
+Lata2::Lata2()
+{
+  ponerNombre( "lata-pepsi" );
+  ponerIdentificador(5);
+
+  agregar( new MaterialLata2() );
   agregar( new MallaRevol("../plys/lata-pcue.ply", 20, false, false, true) );
   agregar( new MaterialTapasLata() );
   agregar( new MallaRevol("../plys/lata-pinf.ply", 20, false, false, true) );
@@ -472,4 +489,26 @@ PeonNegro::PeonNegro()
 
   agregar( new MaterialPeonNegro() );
   agregar( new MallaRevol("../plys/peon.ply", 20, true, false, false) );
+}
+
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+EscenaP5::EscenaP5()
+{
+  ponerNombre( "escena para la P5" );
+
+  agregar( MAT_Escalado(2.5, 2.5, 2.5) );
+  agregar( new Lata() );
+  agregar( MAT_Traslacion(0.8, 0.0, 0.0) );
+  agregar(  new Lata2() );
+  agregar( MAT_Traslacion(-0.8, 0.0, 0.0) );
+  agregar( MAT_Escalado(0.15, 0.15, 0.15) );
+  agregar( MAT_Traslacion(0.0, 1.4, 5.0) );
+  agregar( new PeonMadera() );
+  agregar( MAT_Traslacion(2.5, 0.0, 0.0) );
+  agregar( new PeonBlanco() );
+  agregar( MAT_Traslacion(2.5, 0.0, 0.0) );
+  agregar( new PeonNegro() );
+
 }

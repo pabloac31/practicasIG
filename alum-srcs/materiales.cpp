@@ -547,12 +547,16 @@ MaterialLata::MaterialLata()
   : Material(new Textura("../imgs/lata-coke.jpg"), 0.4, 0.4, 0.8, 15.0)
 {}
 
+MaterialLata2::MaterialLata2()
+  : Material(new Textura("../imgs/lata-pepsi.jpg"), 0.4, 0.4, 0.8, 15.0)
+{}
+
 MaterialTapasLata::MaterialTapasLata()
   : Material({0.9, 0.9, 0.9}, 0.3, 0.3, 0.4, 1.0)
 {}
 
 MaterialPeonNegro::MaterialPeonNegro()
-  : Material({0.1, 0.1, 0.1}, 0.0, 0.8, 0.2, 0.5)
+  : Material({0.1, 0.1, 0.1}, 0.0, 0.8, 0.5, 2.0)
 {}
 
 MaterialPeonBlanco::MaterialPeonBlanco()
@@ -570,6 +574,15 @@ ColFuentesLuzP4::ColFuentesLuzP4()
 
   insertar( new FuenteDireccional( -30.0, 60.0, col1 ) );
   insertar( new FuentePosicional( {2.0, 3.0, 2.0}, col2 ) );
+}
+
+ColFuentesLuzP5::ColFuentesLuzP5()
+{
+  const VectorRGB col1 = VectorRGB(0.6, 0.6, 0.6, 0.0);
+  const VectorRGB col2 = VectorRGB(0.5, 0.5, 0.5, 1.0);
+
+  insertar( new FuenteDireccional( -10.0, 30.0, col1 ) );
+  insertar( new FuentePosicional( {2.0, 3.0, 1.0}, col2 ) );
 }
 
 //**********************************************************************

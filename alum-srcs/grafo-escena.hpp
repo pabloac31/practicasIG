@@ -194,6 +194,12 @@ public:
   Lata();
 };
 
+class Lata2 : public NodoGrafoEscena
+{
+public:
+  Lata2();
+};
+
 class PeonMadera : public NodoGrafoEscena
 {
 public:
@@ -212,6 +218,13 @@ public:
   PeonNegro();
 };
 
+
+//----------------------------------------------------------------------
+class EscenaP5 : public NodoGrafoEscena
+{
+public:
+  EscenaP5();
+};
 
 #endif // GRAFO_ESCENA_HPP
 
