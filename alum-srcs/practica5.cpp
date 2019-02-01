@@ -56,13 +56,13 @@ void P5_Inicializar(  int vp_ancho, int vp_alto )
    float ratio = (float)vp_alto / vp_ancho;
 
    // Alzado
-   camaras[0] = new CamaraInteractiva (true, ratio, 0, 0, {0, 0, 0}, true, 80.0, 1.8);
+   camaras[0] = new CamaraInteractiva (true, ratio, 0, 0, {0, 0, 0}, true, 80.0, 4.0);
    // Alzado ortográfica
    camaras[1] = new CamaraInteractiva (true, ratio, 0, 0, {0, 0, 0}, false, 80.0, 3.2);
    // Planta
-   camaras[2] = new CamaraInteractiva (true, ratio, 0, 90, {0, 0, 0}, true, 80.0, 4.0);
+   camaras[2] = new CamaraInteractiva (true, ratio, 0, 90, {0, 0, 0}, true, 80.0, 6.0);
    // Perfil
-   camaras[3] = new CamaraInteractiva (true, ratio, 90, 0, {0, 0, 0}, true, 80.0, 2.0);
+   camaras[3] = new CamaraInteractiva (true, ratio, 90, 0, {0, 0, 0}, true, 80.0, 5.0);
 
    cout << "hecho." << endl << flush ;
 }
@@ -234,6 +234,10 @@ void P5_ClickIzquierdo( int x, int y )
    if (objetos5[objetoActivo5]->buscarObjeto(id, m, &obj, centro_wc)) {
      camaras[camaraActiva]->modoExaminar(centro_wc);
      cout << "práctica 5: objeto seleccionado: " << obj->leerNombre() << endl;
+     if (obj->leerIdentificador() == 9) {
+       camaras[camaraActiva]->modoExaminar();
+       cout << "bingo! has acertado en el dado" << endl;
+     }
    }
 
    else

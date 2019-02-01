@@ -419,6 +419,7 @@ EscenaP4::EscenaP4()
 {
   ponerNombre( "escena para la P4" );
 
+  agregar( new DadoMat() );
   agregar( MAT_Escalado(2.5, 2.5, 2.5) );
   agregar( new Lata() );
   agregar( MAT_Escalado(0.15, 0.15, 0.15) );
@@ -429,6 +430,17 @@ EscenaP4::EscenaP4()
   agregar( MAT_Traslacion(2.5, 0.0, 0.0) );
   agregar( new PeonNegro() );
 
+}
+
+DadoMat::DadoMat()
+{
+  ponerNombre( "dado" );
+  ponerIdentificador(9);
+
+  agregar(MAT_Escalado(0.3,0.3,0.3));
+  agregar(MAT_Traslacion(0.0,1.0,12.0));
+  agregar(new MaterialDado());
+  agregar( new Dado() );
 }
 
 // -----------------------------------------------------------------------------
@@ -498,6 +510,7 @@ EscenaP5::EscenaP5()
 {
   ponerNombre( "escena para la P5" );
 
+  agregar( new DadoMat() );
   agregar( MAT_Escalado(2.5, 2.5, 2.5) );
   agregar( new Lata() );
   agregar( MAT_Traslacion(0.8, 0.0, 0.0) );

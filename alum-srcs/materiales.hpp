@@ -349,4 +349,10 @@ public:
   MaterialBrazo();
 };
 
+class MaterialDado : public Material
+{
+public:
+  MaterialDado();
+};
+
 #endif

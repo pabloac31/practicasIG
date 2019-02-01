@@ -64,6 +64,4 @@ bool P1_FGE_PulsarTeclaCaracter( unsigned char tecla )
 void P1_DibujarObjetos( ContextoVis & cv )
 {
    objeto[objetoActivo] -> visualizarGL(cv);
-   // arbol(5);
-   // poligono(5,1);
 }

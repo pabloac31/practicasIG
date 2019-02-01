@@ -218,6 +218,12 @@ public:
   PeonNegro();
 };
 
+class DadoMat : public NodoGrafoEscena
+{
+public:
+  DadoMat();
+};
+
 
 //----------------------------------------------------------------------
 class EscenaP5 : public NodoGrafoEscena

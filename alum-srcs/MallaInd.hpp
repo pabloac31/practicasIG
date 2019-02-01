@@ -98,12 +98,13 @@ public:
   Tetraedro();
 };
 
+// ---------------------------------------------------------------------
+// clase Dado
+class Dado : public MallaInd
+{
+public:
+  Dado();
+};
 
-//---------------------------------------------------------------------------------
-// EJERCICIOS
-
-void tronco();
-void arbol(unsigned resto_niveles);
-void poligono(int lados, float radio);
 
 #endif

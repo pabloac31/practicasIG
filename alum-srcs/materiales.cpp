@@ -448,8 +448,8 @@ bool FuenteDireccional::gestionarEventoTeclaEspecial( int key )
          cout << "tecla no usable para la fuente de luz." << endl << flush ;
    }
 
-   //if ( actualizar )
-   //   cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
+   if ( actualizar )
+      cout << "fuente de luz cambiada: longi == " << longi << ", lati == " << lati << endl << flush ;
    return actualizar ;
 }
 
@@ -589,4 +589,8 @@ ColFuentesLuzP5::ColFuentesLuzP5()
 
 MaterialBrazo::MaterialBrazo()
 : Material(new Textura("../imgs/text-metal.jpg"), 0.2, 0.2, 0.6, 4.9)
+{}
+
+MaterialDado::MaterialDado()
+: Material(new Textura("../imgs/textura-dado-nr.jpg"), 0.4, 0.6, 0.0, 0.0)
 {}

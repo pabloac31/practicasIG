@@ -55,12 +55,24 @@ bool P4_FGE_PulsarTeclaCaracter( unsigned char tecla )
    switch ( toupper( tecla ) )
    {
 
+     case 'O' :
+         objetoActivo4 = (objetoActivo4 + 1) % numObjetos4 ;
+         cout << "práctica 4: nuevo objeto activo es: ";
+         if ( objetos4[objetoActivo4] != nullptr )
+            cout << objetos4[objetoActivo4]->leerNombre() << endl ;
+
+         res = true ;
+
+         break ;
+
       case 'G' :
          // COMPLETAR: práctica 4: activar el siguiente ángulo (longitud o latitud)
          // ....
-         angulo4 = angulo4==0 ? 1 : 0;
+         angulo4 = 1 - angulo4;
+         cout << "práctica 4: ángulo actual cambiado a " << angulo4 << endl;
 
-         break ;
+         res = true;
+break ;
 
       case '>' :
          // COMPLETAR: práctica 4: incrementar el ángulo activo
